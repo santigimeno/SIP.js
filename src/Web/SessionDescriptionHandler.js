@@ -209,7 +209,13 @@ SessionDescriptionHandler.prototype = Object.create(SIP.SessionDescriptionHandle
 
     var description = {
       type: this.hasOffer('local') ? 'answer' : 'offer',
-      sdp: sessionDescription
+      sdp: sessionDescription,
+      toJSON: function() {
+        return {
+          type: RTCSessionDescription.type,
+          sdp: RTCSessionDescription.sdp
+        };
+      }
     };
 
     return SIP.Utils.Promise.resolve()
@@ -348,11 +354,11 @@ SessionDescriptionHandler.prototype = Object.create(SIP.SessionDescriptionHandle
     return {
       type: RTCSessionDescription.type,
       sdp: RTCSessionDescription.sdp,
-      toJSON: () => {
+      toJSON: function() {
         return {
           type: RTCSessionDescription.type,
           sdp: RTCSessionDescription.sdp
-        }
+        };
       }
     };
   }},
