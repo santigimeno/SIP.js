@@ -207,13 +207,14 @@ SessionDescriptionHandler.prototype = Object.create(SIP.SessionDescriptionHandle
     }
     modifiers = modifiers.concat(this.modifiers);
 
+    var type = this.hasOffer('local') ? 'answer' : 'offer';
     var description = {
-      type: this.hasOffer('local') ? 'answer' : 'offer',
+      type: type,
       sdp: sessionDescription,
       toJSON: function() {
         return {
-          type: RTCSessionDescription.type,
-          sdp: RTCSessionDescription.sdp
+          type: type,
+          sdp: sessionDescription
         };
       }
     };
