@@ -321,8 +321,15 @@ SessionDescriptionHandler.prototype = Object.create(SIP.SessionDescriptionHandle
       .then(function onSetLocalDescriptionSuccess() {
         return self.waitForIceGatheringComplete();
       })
-      .then(function readySuccess() {
-        var localDescription = self.createRTCSessionDescriptionInit(self.peerConnection.localDescription);
+      .then(function updateOfferOrAnswer() {
+        return pc[methodName](RTCOfferOptions);
+      })
+      .catch(function methodError(e) {
+        self.emit('peerConnection-' + methodName + 'Failed', e);
+        throw e;
+      })
+      .then(function readySuccess(sdp) {
+        var localDescription = self.createRTCSessionDescriptionInit(sdp);
         return SIP.Utils.reducePromises(modifiers, localDescription);
       })
       .then(function(localDescription) {
@@ -340,7 +347,13 @@ SessionDescriptionHandler.prototype = Object.create(SIP.SessionDescriptionHandle
   createRTCSessionDescriptionInit: {writable: true, value: function createRTCSessionDescriptionInit(RTCSessionDescription) {
     return {
       type: RTCSessionDescription.type,
-      sdp: RTCSessionDescription.sdp
+      sdp: RTCSessionDescription.sdp,
+      toJSON: () => {
+        return {
+          type: RTCSessionDescription.type,
+          sdp: RTCSessionDescription.sdp
+        }
+      }
     };
   }},
 
